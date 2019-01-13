@@ -34,11 +34,12 @@ void setup() {
 }
 
 void loop() {
-  while (HC12.available()){ // Runs when the serial buffer contains data
+  while(HC12.available()) { // Runs when the serial buffer contains data
     command = HC12.read(); // Save read character to a variable
     Serial.write(command); // Debug
-    if (!(command == '1'||command == '2'||command == '3'||command == '4'||command == '5'||command == '6'||command == '7'||command == '8')){ //Check if new motor has been selected by user
-      switch (command){ //Set current motor control based on user input
+    
+    if(!(command == '1'||command == '2'||command == '3'||command == '4'||command == '5'||command == '6'||command == '7'||command == '8')) { //Check if new motor has been selected by user
+      switch(command) { //Set current motor control based on user input
         case 'A': //A=1st Joint
           setMotor=4;
           break;
@@ -59,159 +60,89 @@ void loop() {
       //  break;
       }
     }
-    else{
+    else {
       HC12end = true;
     }
-    if (HC12end) break; // Breaks out of loop if a motor command is found in the received data
+    
+    if(HC12end) break; // Breaks out of loop if a motor command is found in the received data
   }
   
-  if (HC12end){ // Runs if motor command is inputed
-    switch (command){ // Runs the corresponding case based on motor command
-                      // setMotor = 0 controls 2 motors simultaneously and needs additional codes
+  if(HC12end) { // Runs if motor command is inputed
+    switch(command) { // Runs the corresponding case based on motor command
+                      // setMotor = 0 controls the two hand motors
+                      // cases 5 to 8 moves the set motor as well as the base motor
       case '1': // 1 = Up on the joystick
-        if (setMotor == 0){
-          digitalWrite(dirstep[setMotor][0],LOW);
-          digitalWrite(dirstep[setMotor+1][0],HIGH);
-          digitalWrite(dirstep[setMotor][1],HIGH);
-          digitalWrite(dirstep[setMotor+1][1],HIGH); 
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[setMotor][1],LOW);
-          digitalWrite(dirstep[setMotor+1][1],LOW); 
-          motorDelay(50);
+        if(setMotor == 0) {
+          moveTwoMotors(setMotor, setMotor+1, LOW, HIGH);
         }
-        else{
-          digitalWrite(dirstep[setMotor][0],HIGH); 
-          digitalWrite(dirstep[setMotor][1],HIGH); 
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[setMotor][1],LOW); 
-          motorDelay(50); 
+        else {
+          moveMotor(setMotor,HIGH);
         }
         break;
       case '2': // 2 = Right on the joystick
-        if (setMotor == 0){
-          digitalWrite(dirstep[setMotor][0],HIGH);
-          digitalWrite(dirstep[setMotor+1][0],HIGH);
-          digitalWrite(dirstep[setMotor][1],HIGH);
-          digitalWrite(dirstep[setMotor+1][1],HIGH); 
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[setMotor][1],LOW);
-          digitalWrite(dirstep[setMotor+1][1],LOW); 
-          motorDelay(50);
+        if(setMotor == 0) {
+          moveTwoMotors(setMotor, setMotor+1, HIGH, HIGH);
         }
-        else{
-          digitalWrite(dirstep[5][0],HIGH); 
-          digitalWrite(dirstep[5][1],HIGH); 
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[5][1],LOW); 
-          motorDelay(50); 
+        else {
+          moveMotor(5,HIGH);
         }
         break;
       case '3': // 3 = Down on the joystick
-        if (setMotor == 0){
-          digitalWrite(dirstep[setMotor][0],HIGH);
-          digitalWrite(dirstep[setMotor+1][0],LOW);
-          digitalWrite(dirstep[setMotor][1],HIGH);
-          digitalWrite(dirstep[setMotor+1][1],HIGH); 
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[setMotor][1],LOW);
-          digitalWrite(dirstep[setMotor+1][1],LOW); 
-          motorDelay(50);
+        if(setMotor == 0) {
+          moveTwoMotors(setMotor, setMotor+1, HIGH, LOW);
         }
-        else{
-          digitalWrite(dirstep[setMotor][0],LOW);
-          digitalWrite(dirstep[setMotor][1],HIGH); 
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[setMotor][1],LOW); 
-          motorDelay(50); 
+        else {
+          moveMotor(setMotor,LOW);
         }
         break;
       case '4': // 4 = Left on the joystick
-        if (setMotor == 0){
-          digitalWrite(dirstep[setMotor][0],LOW);
-          digitalWrite(dirstep[setMotor+1][0],LOW);
-          digitalWrite(dirstep[setMotor][1],HIGH);
-          digitalWrite(dirstep[setMotor+1][1],HIGH); 
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[setMotor][1],LOW);
-          digitalWrite(dirstep[setMotor+1][1],LOW); 
-          motorDelay(50);
+        if(setMotor == 0) {
+          moveTwoMotors(setMotor, setMotor+1, LOW, LOW);
         }
-        else{
-          digitalWrite(dirstep[5][0],LOW); 
-          digitalWrite(dirstep[5][1],HIGH); 
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[5][1],LOW); 
-          motorDelay(50);
+        else {
+          moveMotor(5,LOW);
         }
         break;
       case '5': // 5 = Down Left on the joystick
-        if (setMotor == 0){
-          break;
-        }
-        else{
-          digitalWrite(dirstep[5][0],LOW);
-          digitalWrite(dirstep[setMotor][0],LOW); 
-          digitalWrite(dirstep[5][1],HIGH); 
-          digitalWrite(dirstep[setMotor][1],HIGH);
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[5][1],LOW);
-          digitalWrite(dirstep[setMotor][1],LOW); 
-          motorDelay(50);
-        }
+        moveTwoMotors(5, setMotor, LOW, LOW);
         break;
       case '6': // 6 = Down Right on the joystick
-        if (setMotor == 0){
-          break;
-        }
-        else{
-          digitalWrite(dirstep[5][0],HIGH);
-          digitalWrite(dirstep[setMotor][0],LOW); 
-          digitalWrite(dirstep[5][1],HIGH); 
-          digitalWrite(dirstep[setMotor][1],HIGH);
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[5][1],LOW);
-          digitalWrite(dirstep[setMotor][1],LOW); 
-          motorDelay(50);
-        }
+        moveTwoMotors(5, setMotor, HIGH, LOW);
         break;
       case '7': // 7 = Up Left on the joystick
-        if (setMotor == 0){
-          break;
-        }
-        else{
-          digitalWrite(dirstep[5][0],LOW);
-          digitalWrite(dirstep[setMotor][0],HIGH); 
-          digitalWrite(dirstep[5][1],HIGH); 
-          digitalWrite(dirstep[setMotor][1],HIGH);
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[5][1],LOW);
-          digitalWrite(dirstep[setMotor][1],LOW); 
-          motorDelay(50);
-        }
+        moveTwoMotors(5, setMotor, LOW, HIGH);
         break;
       case '8': // 8 = Up Right on the joystick
-        if (setMotor == 0){
-          break;
-        }
-        else{
-          digitalWrite(dirstep[5][0],HIGH);
-          digitalWrite(dirstep[setMotor][0],HIGH); 
-          digitalWrite(dirstep[5][1],HIGH); 
-          digitalWrite(dirstep[setMotor][1],HIGH);
-          motorDelay(motorSpeed); 
-          digitalWrite(dirstep[5][1],LOW);
-          digitalWrite(dirstep[setMotor][1],LOW); 
-          motorDelay(50);
-        }
+        moveTwoMotors(5, setMotor, HIGH, HIGH);
         break;
     }
+    
     HC12end = false;
   }
 }
 
-void motorDelay(int del){ // Delay function that clears the serial buffer while waiting
+void motorDelay(int del) { // Delay function that clears the serial buffer while waiting
   unsigned long start = micros();
-  while ((micros()-start)<=del){
+  while((micros()-start)<=del) {
     HC12.read();
   }
+}
+
+void moveMotor(int motor, int dir) { // Moves a single motor according to the input direction
+  digitalWrite(dirstep[motor][0], dir); 
+  digitalWrite(dirstep[motor][1], HIGH); 
+  motorDelay(motorSpeed); 
+  digitalWrite(dirstep[motor][1], LOW); 
+  motorDelay(50);
+}
+
+void moveTwoMotors(int motor1, int motor2, int dir1, int dir2) { // Moves two motors according to the input directions
+  digitalWrite(dirstep[motor1][0], dir1);
+  digitalWrite(dirstep[motor2][0], dir2);
+  digitalWrite(dirstep[motor1][1], HIGH);
+  digitalWrite(dirstep[motor2][1], HIGH); 
+  motorDelay(motorSpeed); 
+  digitalWrite(dirstep[motor1][1], LOW);
+  digitalWrite(dirstep[motor2][1], LOW); 
+  motorDelay(50);
 }
