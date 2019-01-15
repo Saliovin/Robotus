@@ -50,73 +50,60 @@ void setup(){
 
 void loop() {
   // Checks if any of the face buttons are pressed and outputs the corresponding data through the HC12 and LCD module
-  lcd.setCursor(0,1);
   // Face buttons are pulled HIGH, LOW input means the button is pressed
   if(!digitalRead(pin_button_A)){ 
-    HC12.write("A");
-    lcd.print("First Arm:A     ");
+    sendData('A', "First Arm:A", 0);
   }
-  if(!digitalRead(pin_button_B)){
-    HC12.write("B");
-    lcd.print("Second Arm:B    ");
+  else if(!digitalRead(pin_button_B)){
+    sendData('B', "Second Arm:B", 0);
   }
-  if(!digitalRead(pin_button_C)){
-    HC12.write("C");
-    lcd.print("Claw:C          ");
+  else if(!digitalRead(pin_button_C)){
+    sendData('C', "Claw:C", 0);
   }
-  if(!digitalRead(pin_button_D)){
-    HC12.write("D");
-    lcd.print("Claw Grip:D     ");
+  else if(!digitalRead(pin_button_D)){
+    sendData('D', "Claw Grip:D", 0);
   }
   //Should the start and select buttons be used, remove the comment marks
-  //if(!digitalRead(pin_button_E)) HC12.write("E");
-  //if(!digitalRead(pin_button_F)) HC12.write("F");
+  //else if(!digitalRead(pin_button_E)) sendData('E', "xxxxx", 0);
+  //else if(!digitalRead(pin_button_F)) sendData('F', "xxxxx", 0);
 
   // Checks the current position of the joystick and outputs data based on the comparison of preset values to that of the current position
   analog_x = analogRead(pin_button_X);
   analog_y = analogRead(pin_button_Y);
+  
   if ((analog_x>=1000)&&(analog_y<1000)&&(analog_y>10)){ // Right
-    HC12.write("2");
-    lcd.setCursor(14,1);
-    lcd.print("R ");
+    sendData('2', "R", 14);
   }
   else if ((analog_x<=10)&&(analog_y<1000)&&(analog_y>10)){ // Left
-    HC12.write("4");
-    lcd.setCursor(14,1);
-    lcd.print("L ");
+    sendData('4', "L", 14);
   }
   else if ((analog_y>=1000)&&(analog_x<1000)&&(analog_x>10)){ // Up
-    HC12.write("1");
-    lcd.setCursor(14,1);
-    lcd.print("U ");
+    sendData('1', "U", 14);
   }
   else if ((analog_y<=10)&&(analog_x<1000)&&(analog_x>10)){ // Down
-    HC12.write("3"); 
-    lcd.setCursor(14,1);
-    lcd.print("D ");
+    sendData('3', "D", 14);
   }
   else if ((analog_x<1000)&&(analog_x>10)&&(analog_y<1000)&&(analog_y>10)){ // Neutral
     lcd.setCursor(14,1);
     lcd.print("  ");
   }
   else if ((analog_y<=10)&&(analog_x<=10)){ // Down Left
-    HC12.write("5"); 
-    lcd.setCursor(14,1);
-    lcd.print("DL");
+    sendData('5', "DL", 14);
   }
   else if ((analog_y<=10)&&(analog_x>=1000)){ // Down Right
-    HC12.write("6"); 
-    lcd.setCursor(14,1);
-    lcd.print("DR");
+    sendData('6', "DR", 14);
   }
   else if ((analog_y>=1000)&&(analog_x<=10)){ // Up Left
-    HC12.write("7"); 
-    lcd.setCursor(14,1);
-    lcd.print("UL");
+    sendData('7', "UL", 14);
   }
   else if ((analog_y>=1000)&&(analog_x>=1000)){ // Up Right
-    HC12.write("8"); 
-    lcd.setCursor(14,1);
-    lcd.print("UR");
+    sendData('8', "UR", 14);
   }
+}
+
+void sendData(char toBeSent, String toBeDisplayed, int cursorLocation) { // Sends input data through the HC12 module and prints the input string at the cursor location
+  lcd.setCursor(cursorLocation, 1);
+  HC12.write(toBeSent);
+  lcd.print(toBeDisplayed);
+  lcd.print("                ");
 }
